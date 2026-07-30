@@ -19,6 +19,7 @@ from homeassistant.components.librespeed.config_flow import (
 from homeassistant.components.librespeed.const import (
     CONF_AUTO_UPDATE,
     CONF_BACKEND_TYPE,
+    CONF_BIND_ADDRESS,
     CONF_CUSTOM_SERVER,
     CONF_SCAN_INTERVAL,
     CONF_SERVER_ID,
@@ -97,12 +98,14 @@ async def test_user_flow_automatic_server(
             CONF_AUTO_UPDATE: True,
             CONF_SCAN_INTERVAL: DEFAULT_UPDATE_INTERVAL,
             CONF_TEST_TIMEOUT: DEFAULT_TEST_TIMEOUT,
+            CONF_BIND_ADDRESS: "eth0",
         },
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == "LibreSpeed (Automatic)"
     assert result["data"][CONF_SERVER_ID] is None
     assert result["data"][CONF_CUSTOM_SERVER] is None
+    assert result["data"][CONF_BIND_ADDRESS] == "eth0"
 
 
 async def test_user_flow_specific_server(

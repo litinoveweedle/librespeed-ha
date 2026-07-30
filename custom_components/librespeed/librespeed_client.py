@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 from datetime import datetime, timezone
+import ipaddress
 import json
 import logging
 import os
@@ -73,7 +74,7 @@ HEADERS = {
 class LibreSpeedClient:
     """LibreSpeed test client."""
 
-    def __init__(self, session: aiohttp.ClientSession) -> None:
+    def __init__(self, session: aiohttp.ClientSession | None = None) -> None:
         """Initialize the client."""
         self.session = session
         self.servers: list[dict[str, Any]] = []
@@ -378,11 +379,34 @@ class LibreSpeedClient:
         server_id: int | None = None,
         custom_server_url: str | None = None,
         timeout: int = DEFAULT_SPEED_TEST_TIMEOUT,
+        bind_address: str | None = None,
     ) -> dict[str, Any]:
         """Run a complete speed test."""
         # Reset backend detection for each test run
         self._detected_backend_type = None
         _LOGGER.info("Starting speed test...")
+
+        original_session = self.session
+        bound_session = None
+        should_close_bound_session = False
+
+        if bind_address:
+            bind_value = bind_address.strip()
+            if bind_value:
+                try:
+                    ipaddress.ip_address(bind_value)
+                except ValueError:
+                    _LOGGER.warning(
+                        "Native backend only supports source IP binding; ignoring interface '%s'",
+                        bind_value,
+                    )
+                else:
+                    _LOGGER.debug("Binding native client traffic to %s", bind_value)
+                    bound_session = aiohttp.ClientSession(
+                        connector=aiohttp.TCPConnector(local_addr=(bind_value, 0))
+                    )
+                    self.session = bound_session
+                    should_close_bound_session = True
 
         # Determine which server to use
         if custom_server_url:
@@ -509,6 +533,10 @@ class LibreSpeedClient:
                 translation_key="speed_test_failed",
                 translation_placeholders={"error": str(e)},
             ) from e
+        finally:
+            self.session = original_session
+            if should_close_bound_session and bound_session is not None:
+                await bound_session.close()
 
         return result
 

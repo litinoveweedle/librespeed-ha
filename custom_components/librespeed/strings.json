@@ -18,7 +18,8 @@
           "server_selection": "Select 'Automatic' to use the best server, choose a specific server, or 'Custom' to use your own",
           "auto_update": "When enabled, speed tests will run automatically at the specified interval",
           "scan_interval": "How often to run automatic speed tests (minimum 30 minutes)",
-          "test_timeout": "Maximum time allowed for a single speed test to complete (60-600 seconds)"
+          "test_timeout": "Maximum time allowed for a single speed test to complete (60-600 seconds)",
+          "bind_address": "Optional interface name (for example eth0) or source IP address to bind the test traffic to"
         }
       },
       "custom_server": {
@@ -67,7 +68,8 @@
           "server_selection": "Change the server used for speed tests",
           "auto_update": "Enable or disable automatic scheduled tests",
           "scan_interval": "Adjust how often tests run (in minutes)",
-          "test_timeout": "Maximum time allowed for a single speed test (60-600 seconds)"
+          "test_timeout": "Maximum time allowed for a single speed test (60-600 seconds)",
+          "bind_address": "Optional interface name or source IP to use for outgoing traffic"
         }
       },
       "custom_server": {

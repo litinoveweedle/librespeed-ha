@@ -32,6 +32,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .const import (
     CONF_AUTO_UPDATE,
     CONF_BACKEND_TYPE,
+    CONF_BIND_ADDRESS,
     CONF_CUSTOM_SERVER,
     CONF_SCAN_INTERVAL,
     CONF_SERVER_ID,
@@ -117,6 +118,7 @@ def _create_custom_server_data(
         CONF_AUTO_UPDATE: base_input.get(CONF_AUTO_UPDATE, True),
         CONF_SCAN_INTERVAL: base_input.get(CONF_SCAN_INTERVAL, DEFAULT_UPDATE_INTERVAL),
         CONF_BACKEND_TYPE: base_input.get(CONF_BACKEND_TYPE, "native"),
+        CONF_BIND_ADDRESS: base_input.get(CONF_BIND_ADDRESS, ""),
     }
 
 
@@ -192,6 +194,10 @@ def _build_common_schema(
                 mode=selector.NumberSelectorMode.BOX,
             )
         ),
+        vol.Optional(
+            CONF_BIND_ADDRESS,
+            default=config.get(CONF_BIND_ADDRESS, ""),
+        ): str,
     }
 
     return vol.Schema(schema)
@@ -244,6 +250,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             CONF_SCAN_INTERVAL, DEFAULT_UPDATE_INTERVAL
         )
         data[CONF_BACKEND_TYPE] = user_input.get(CONF_BACKEND_TYPE, "native")
+        data[CONF_BIND_ADDRESS] = user_input.get(CONF_BIND_ADDRESS, "")
 
         # Generate unique ID based on configuration
         # This allows multiple instances with different servers
@@ -375,6 +382,7 @@ class OptionsFlow(config_entries.OptionsFlow):
                 CONF_SCAN_INTERVAL, DEFAULT_UPDATE_INTERVAL
             )
             data[CONF_BACKEND_TYPE] = user_input.get(CONF_BACKEND_TYPE, "native")
+            data[CONF_BIND_ADDRESS] = user_input.get(CONF_BIND_ADDRESS, "")
             # Preserve skip_cert_verify setting from existing config (check options first, then data)
             data[CONF_SKIP_CERT_VERIFY] = (
                 self.config_entry.options.get(CONF_SKIP_CERT_VERIFY)

@@ -15,6 +15,7 @@ CONF_SCAN_INTERVAL = "scan_interval"
 CONF_AUTO_UPDATE = "auto_update"
 CONF_SKIP_CERT_VERIFY = "skip_cert_verify"
 CONF_BACKEND_TYPE = "backend_type"
+CONF_BIND_ADDRESS = "bind_address"
 CONF_TEST_TIMEOUT = "test_timeout"
 
 MIN_SCAN_INTERVAL = 30
