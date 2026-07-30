@@ -17,6 +17,7 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from .const import (
     CONF_AUTO_UPDATE,
     CONF_BACKEND_TYPE,
+    CONF_BIND_ADDRESS,
     CONF_CUSTOM_SERVER,
     CONF_SCAN_INTERVAL,
     CONF_SERVER_ID,
@@ -206,6 +207,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             test_timeout=get_config_value(
                 entry, CONF_TEST_TIMEOUT, DEFAULT_TEST_TIMEOUT
             ),
+            bind_address=get_config_value(entry, CONF_BIND_ADDRESS, ""),
         )
 
         # Load stored data BEFORE setting up platforms so sensors have data

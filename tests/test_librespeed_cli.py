@@ -16,6 +16,7 @@ from homeassistant.components.librespeed.exceptions import (
     LibreSpeedError,
     SpeedTestTimeoutError,
 )
+from homeassistant.components.librespeed.const import CONF_BIND_ADDRESS
 from homeassistant.components.librespeed.librespeed_cli import LibreSpeedCLI
 
 
@@ -210,6 +211,42 @@ async def test_run_speed_test_with_server_id() -> None:
     assert "--server" in call_args
     idx = list(call_args).index("--server")
     assert call_args[idx + 1] == "42"
+
+
+async def test_run_speed_test_with_interface_selection() -> None:
+    """Test CLI speed test forwards interface binding."""
+    cli = LibreSpeedCLI("/fake/path", cli_path="/fake/bin/librespeed-cli")
+    with (
+        patch.object(Path, "exists", return_value=True),
+        patch(
+            "homeassistant.components.librespeed.librespeed_cli.asyncio.create_subprocess_exec",
+            return_value=_mock_process(),
+        ) as mock_exec,
+    ):
+        await cli.run_speed_test(bind_address="eth0")
+
+    call_args = mock_exec.call_args[0]
+    assert "--interface" in call_args
+    idx = list(call_args).index("--interface")
+    assert call_args[idx + 1] == "eth0"
+
+
+async def test_run_speed_test_with_source_ip_selection() -> None:
+    """Test CLI speed test forwards source IP binding."""
+    cli = LibreSpeedCLI("/fake/path", cli_path="/fake/bin/librespeed-cli")
+    with (
+        patch.object(Path, "exists", return_value=True),
+        patch(
+            "homeassistant.components.librespeed.librespeed_cli.asyncio.create_subprocess_exec",
+            return_value=_mock_process(),
+        ) as mock_exec,
+    ):
+        await cli.run_speed_test(bind_address="192.0.2.10")
+
+    call_args = mock_exec.call_args[0]
+    assert "--source" in call_args
+    idx = list(call_args).index("--source")
+    assert call_args[idx + 1] == "192.0.2.10"
 
 
 async def test_run_speed_test_cli_not_found() -> None:

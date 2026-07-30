@@ -23,6 +23,7 @@ from .const import (
     ATTR_LIFETIME_DOWNLOAD,
     ATTR_LIFETIME_UPLOAD,
     CIRCUIT_BREAKER_OPEN_THRESHOLD,
+    CONF_BIND_ADDRESS,
     CIRCUIT_BREAKER_WARNING_THRESHOLD,
     CUSTOM_SERVER_ERROR_COOLDOWN,
     DEFAULT_TEST_TIMEOUT,
@@ -59,6 +60,7 @@ class LibreSpeedDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         backend_type: str = "native",
         config_entry: ConfigEntry | None = None,
         test_timeout: int = DEFAULT_TEST_TIMEOUT,
+        bind_address: str | None = None,
     ) -> None:
         """Initialize the coordinator.
 
@@ -73,6 +75,7 @@ class LibreSpeedDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             backend_type: Type of backend ("native" or "cli").
             config_entry: Config entry for this integration instance.
             test_timeout: Maximum time allowed for a speed test in seconds.
+            bind_address: Optional interface name or source IP to bind the test to.
         """
         self.client: LibreSpeedClient | LibreSpeedCLI = client
         self.server_id: int | None = server_id
@@ -82,6 +85,7 @@ class LibreSpeedDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.backend_type: str = backend_type
         self.entry_title: str = config_entry.title if config_entry else "LibreSpeed"
         self.test_timeout: int = test_timeout
+        self.bind_address: str | None = bind_address
         self.is_running: bool = False
         self.is_waiting: bool = False  # Track if waiting for global lock
         self.lifetime_download: float = 0.0  # GB - will be loaded from storage
@@ -221,6 +225,7 @@ class LibreSpeedDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                                 custom_server=self.custom_server,
                                 skip_cert_verify=self.skip_cert_verify,
                                 timeout=self.test_timeout,
+                                bind_address=self.bind_address,
                             )
                         else:
                             # Native backend uses custom_server_url parameter
@@ -228,6 +233,7 @@ class LibreSpeedDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                                 server_id=self.server_id,
                                 custom_server_url=self.custom_server,
                                 timeout=self.test_timeout,
+                                bind_address=self.bind_address,
                             )
 
                         _LOGGER.debug("Raw speed test result: %s", result)

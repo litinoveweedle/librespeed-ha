@@ -528,6 +528,7 @@ class LibreSpeedCLI:
         custom_server: str | None = None,
         skip_cert_verify: bool = False,
         timeout: int = DEFAULT_SPEED_TEST_TIMEOUT,
+        bind_address: str | None = None,
     ) -> dict[str, Any]:
         """Run speed test using CLI and return results."""
         # CLI should already be available from setup, but do a quick check
@@ -578,6 +579,16 @@ class LibreSpeedCLI:
             # Add SSL verification skip
             if skip_cert_verify:
                 cmd.append("--skip-cert-verify")
+
+            if bind_address:
+                bind_value = bind_address.strip()
+                if bind_value:
+                    try:
+                        ipaddress.ip_address(bind_value)
+                    except ValueError:
+                        cmd.extend(["--interface", bind_value])
+                    else:
+                        cmd.extend(["--source", bind_value])
 
             _LOGGER.info("Running LibreSpeed CLI with command: %s", " ".join(cmd))
 

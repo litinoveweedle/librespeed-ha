@@ -193,6 +193,32 @@ async def test_run_speed_test_server_not_found() -> None:
         await client.run_speed_test(server_id=999)
 
 
+async def test_run_speed_test_creates_bound_session_for_source_ip() -> None:
+    """Test source IP bindings create a connector with a local address."""
+    session = _mock_session()
+    client = LibreSpeedClient(session)
+
+    bound_session = MagicMock()
+    bound_session.close = AsyncMock()
+
+    with (
+        patch.object(client, "_test_latency", return_value=10.0),
+        patch.object(client, "_test_download", return_value=(100.0, 2000)),
+        patch.object(client, "_test_upload", return_value=(50.0, 1000)),
+        patch(
+            "homeassistant.components.librespeed.librespeed_client.aiohttp.TCPConnector"
+        ) as mock_connector,
+        patch(
+            "homeassistant.components.librespeed.librespeed_client.aiohttp.ClientSession",
+            return_value=bound_session,
+        ),
+    ):
+        await client.run_speed_test(bind_address="192.0.2.10")
+
+    mock_connector.assert_called_once_with(local_addr=("192.0.2.10", 0))
+    bound_session.close.assert_awaited_once()
+
+
 async def test_run_speed_test_cancelled() -> None:
     """Test CancelledError is re-raised."""
     session = _mock_session()
