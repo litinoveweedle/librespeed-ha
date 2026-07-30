@@ -31,7 +31,7 @@ def test_unique_id() -> None:
 
 
 def test_has_entity_name() -> None:
-    """Test has_entity_name is True."""
+    """Test entities use Home Assistant's entity-name pattern."""
     entity = _make_entity()
     assert entity._attr_has_entity_name is True
 

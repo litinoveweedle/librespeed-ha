@@ -36,6 +36,7 @@ class LibreSpeedBaseEntity(CoordinatorEntity[LibreSpeedDataUpdateCoordinator]):
         """
         super().__init__(coordinator)
         self.entity_description = entity_description
+        self._attr_name = None
 
         # Generate unique ID based on config entry and entity key
         config_entry_id = coordinator.config_entry.entry_id
