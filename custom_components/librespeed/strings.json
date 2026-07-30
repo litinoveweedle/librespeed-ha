@@ -8,6 +8,7 @@
         "data": {
           "backend_type": "Backend Type",
           "server_selection": "Server Selection",
+          "name": "Instance Name",
           "custom_server": "Custom Server URL",
           "auto_update": "Enable Automatic Speed Tests",
           "scan_interval": "Test Interval (minutes)",
@@ -16,6 +17,7 @@
         "data_description": {
           "backend_type": "Choose between Native Python (default) or Official CLI for better performance on high-speed connections",
           "server_selection": "Select 'Automatic' to use the best server, choose a specific server, or 'Custom' to use your own",
+          "name": "Optional custom name for this test instance. Leave blank to use the auto-generated name.",
           "auto_update": "When enabled, speed tests will run automatically at the specified interval",
           "scan_interval": "How often to run automatic speed tests (minimum 30 minutes)",
           "test_timeout": "Maximum time allowed for a single speed test to complete (60-600 seconds)",
@@ -58,6 +60,7 @@
         "data": {
           "backend_type": "Backend Type",
           "server_selection": "Server Selection",
+          "name": "Instance Name",
           "custom_server": "Custom Server URL",
           "auto_update": "Enable Automatic Speed Tests",
           "scan_interval": "Test Interval (minutes)",
@@ -66,6 +69,7 @@
         "data_description": {
           "backend_type": "CLI backend recommended for connections over 500 Mbps",
           "server_selection": "Change the server used for speed tests",
+          "name": "Optional custom name for this test instance. Leave blank to use the auto-generated name.",
           "auto_update": "Enable or disable automatic scheduled tests",
           "scan_interval": "Adjust how often tests run (in minutes)",
           "test_timeout": "Maximum time allowed for a single speed test (60-600 seconds)",

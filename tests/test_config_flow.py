@@ -9,6 +9,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from homeassistant import config_entries
+from homeassistant.const import CONF_NAME
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
@@ -130,6 +131,28 @@ async def test_user_flow_specific_server(
     assert "Server One" in result["title"]
 
 
+async def test_user_flow_uses_custom_name_when_provided(
+    hass: HomeAssistant, mock_server_list, mock_cli_supported
+) -> None:
+    """Test a custom instance name is used when provided."""
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    )
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        {
+            "server_selection": "automatic",
+            CONF_BACKEND_TYPE: "native",
+            CONF_AUTO_UPDATE: True,
+            CONF_SCAN_INTERVAL: DEFAULT_UPDATE_INTERVAL,
+            CONF_TEST_TIMEOUT: DEFAULT_TEST_TIMEOUT,
+            CONF_NAME: "Home Office Speed Test",
+        },
+    )
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert result["title"] == "Home Office Speed Test"
+
+
 async def test_user_flow_custom_server_redirect(
     hass: HomeAssistant, mock_server_list, mock_cli_supported
 ) -> None:
@@ -151,16 +174,30 @@ async def test_user_flow_custom_server_redirect(
     assert result["step_id"] == "custom_server"
 
 
-async def test_user_flow_abort_already_configured(
+async def test_user_flow_allows_multiple_entries_for_same_server(
     hass: HomeAssistant, mock_server_list, mock_cli_supported
 ) -> None:
-    """Test abort when already configured."""
-    # Set up first entry
-    result = await hass.config_entries.flow.async_init(
+    """Test multiple entries can be created for the same server selection."""
+    first_result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
-    await hass.config_entries.flow.async_configure(
-        result["flow_id"],
+    first_result = await hass.config_entries.flow.async_configure(
+        first_result["flow_id"],
+        {
+            "server_selection": "automatic",
+            CONF_BACKEND_TYPE: "native",
+            CONF_AUTO_UPDATE: True,
+            CONF_SCAN_INTERVAL: DEFAULT_UPDATE_INTERVAL,
+            CONF_TEST_TIMEOUT: DEFAULT_TEST_TIMEOUT,
+        },
+    )
+    assert first_result["type"] is FlowResultType.CREATE_ENTRY
+
+    second_result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    )
+    second_result = await hass.config_entries.flow.async_configure(
+        second_result["flow_id"],
         {
             "server_selection": "automatic",
             CONF_BACKEND_TYPE: "native",
@@ -170,22 +207,8 @@ async def test_user_flow_abort_already_configured(
         },
     )
 
-    # Try to set up duplicate
-    result = await hass.config_entries.flow.async_init(
-        DOMAIN, context={"source": config_entries.SOURCE_USER}
-    )
-    result = await hass.config_entries.flow.async_configure(
-        result["flow_id"],
-        {
-            "server_selection": "automatic",
-            CONF_BACKEND_TYPE: "native",
-            CONF_AUTO_UPDATE: True,
-            CONF_SCAN_INTERVAL: DEFAULT_UPDATE_INTERVAL,
-            CONF_TEST_TIMEOUT: DEFAULT_TEST_TIMEOUT,
-        },
-    )
-    assert result["type"] is FlowResultType.ABORT
-    assert result["reason"] == "already_configured"
+    assert second_result["type"] is FlowResultType.CREATE_ENTRY
+    assert len(hass.config_entries.async_entries(DOMAIN)) == 2
 
 
 # ---- Custom server step ----
