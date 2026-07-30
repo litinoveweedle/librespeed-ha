@@ -8,6 +8,7 @@
         "data": {
           "backend_type": "Tipo di Backend",
           "server_selection": "Selezione Server",
+          "name": "Nome dell'istanza",
           "custom_server": "URL Server Personalizzato",
           "auto_update": "Abilita Test di Velocità Automatici",
           "scan_interval": "Intervallo Test (minuti)",
@@ -57,6 +58,7 @@
         "data": {
           "backend_type": "Tipo di Backend",
           "server_selection": "Selezione Server",
+          "name": "Nome dell'istanza",
           "custom_server": "URL Server Personalizzato",
           "auto_update": "Abilita Test di Velocità Automatici",
           "scan_interval": "Intervallo Test (minuti)",

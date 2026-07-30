@@ -4,6 +4,7 @@
   "codeowners": ["@gtxaspec"],
   "config_flow": true,
   "dependencies": [],
+  "single_config_entry": false,
   "documentation": "https://github.com/gtxaspec/librespeed-ha",
   "integration_type": "service",
   "iot_class": "cloud_polling",

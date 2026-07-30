@@ -8,6 +8,7 @@
         "data": {
           "backend_type": "Backend Type",
           "server_selection": "Serverselectie",
+          "name": "Instantienaam",
           "custom_server": "Aangepaste Server URL",
           "auto_update": "Automatische Snelheidstesten Inschakelen",
           "scan_interval": "Testinterval (minuten)",
@@ -57,6 +58,7 @@
         "data": {
           "backend_type": "Backend Type",
           "server_selection": "Serverselectie",
+          "name": "Instantienaam",
           "custom_server": "Aangepaste Server URL",
           "auto_update": "Automatische Snelheidstesten Inschakelen",
           "scan_interval": "Testinterval (minuten)",

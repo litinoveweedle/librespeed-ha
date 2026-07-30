@@ -8,6 +8,7 @@
         "data": {
           "backend_type": "Tipo de Backend",
           "server_selection": "Selección de Servidor",
+          "name": "Nombre de la instancia",
           "custom_server": "URL de Servidor Personalizado",
           "auto_update": "Habilitar Pruebas de Velocidad Automáticas",
           "scan_interval": "Intervalo de Prueba (minutos)",
@@ -57,6 +58,7 @@
         "data": {
           "backend_type": "Tipo de Backend",
           "server_selection": "Selección de Servidor",
+          "name": "Nombre de la instancia",
           "custom_server": "URL de Servidor Personalizado",
           "auto_update": "Habilitar Pruebas de Velocidad Automáticas",
           "scan_interval": "Intervalo de Prueba (minutos)",

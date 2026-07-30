@@ -25,6 +25,7 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigFlowResult
+from homeassistant.const import CONF_NAME
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -118,6 +119,7 @@ def _create_custom_server_data(
         CONF_AUTO_UPDATE: base_input.get(CONF_AUTO_UPDATE, True),
         CONF_SCAN_INTERVAL: base_input.get(CONF_SCAN_INTERVAL, DEFAULT_UPDATE_INTERVAL),
         CONF_BACKEND_TYPE: base_input.get(CONF_BACKEND_TYPE, "native"),
+        CONF_NAME: base_input.get(CONF_NAME, ""),
         CONF_BIND_ADDRESS: base_input.get(CONF_BIND_ADDRESS, ""),
     }
 
@@ -195,6 +197,10 @@ def _build_common_schema(
             )
         ),
         vol.Optional(
+            CONF_NAME,
+            default=config.get(CONF_NAME, ""),
+        ): str,
+        vol.Optional(
             CONF_BIND_ADDRESS,
             default=config.get(CONF_BIND_ADDRESS, ""),
         ): str,
@@ -211,6 +217,20 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self) -> None:
         """Initialize the config flow."""
         self._servers: list[dict[str, Any]] = []
+
+    def _get_unique_title(self, base_title: str) -> str:
+        """Return a unique entry title for the current integration instances."""
+        existing_titles = {entry.title for entry in self._async_current_entries()}
+
+        if base_title not in existing_titles:
+            return base_title
+
+        suffix = 2
+        while True:
+            candidate = f"{base_title} ({suffix})"
+            if candidate not in existing_titles:
+                return candidate
+            suffix += 1
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -250,15 +270,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             CONF_SCAN_INTERVAL, DEFAULT_UPDATE_INTERVAL
         )
         data[CONF_BACKEND_TYPE] = user_input.get(CONF_BACKEND_TYPE, "native")
+        data[CONF_NAME] = user_input.get(CONF_NAME, "").strip()
         data[CONF_BIND_ADDRESS] = user_input.get(CONF_BIND_ADDRESS, "")
 
-        # Generate unique ID based on configuration
-        # This allows multiple instances with different servers
         if data[CONF_CUSTOM_SERVER]:
-            unique_id = f"{DOMAIN}_{data[CONF_CUSTOM_SERVER]}"
             title = "LibreSpeed - Custom"
         elif data[CONF_SERVER_ID] is not None:
-            unique_id = f"{DOMAIN}_server_{data[CONF_SERVER_ID]}"
             # Try to get server name from the servers list
             server_name = f"Server {data[CONF_SERVER_ID]}"
             for server in self._servers:
@@ -267,11 +284,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     break
             title = f"LibreSpeed - {server_name}"
         else:
-            unique_id = f"{DOMAIN}_automatic"
             title = "LibreSpeed (Automatic)"
 
-        await self.async_set_unique_id(unique_id)
-        self._abort_if_unique_id_configured()
+        if data[CONF_NAME]:
+            title = data[CONF_NAME]
+
+        title = self._get_unique_title(title)
 
         return self.async_create_entry(
             title=title,
@@ -297,11 +315,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     self._user_input,
                 )
 
-                # Generate unique ID for custom server
-                unique_id = f"{DOMAIN}_{custom_url}"
-                await self.async_set_unique_id(unique_id)
-                self._abort_if_unique_id_configured()
-
                 # Extract domain from URL for title
                 try:
                     parsed = urlparse(custom_url)
@@ -309,8 +322,13 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 except (ValueError, TypeError):
                     domain_name = custom_url
 
+                title = self._get_unique_title(
+                    self._user_input.get(CONF_NAME, "").strip()
+                    or f"LibreSpeed - {domain_name}"
+                )
+
                 return self.async_create_entry(
-                    title=f"LibreSpeed - {domain_name}",
+                    title=title,
                     data=data,
                 )
 
@@ -382,6 +400,7 @@ class OptionsFlow(config_entries.OptionsFlow):
                 CONF_SCAN_INTERVAL, DEFAULT_UPDATE_INTERVAL
             )
             data[CONF_BACKEND_TYPE] = user_input.get(CONF_BACKEND_TYPE, "native")
+            data[CONF_NAME] = user_input.get(CONF_NAME, "").strip()
             data[CONF_BIND_ADDRESS] = user_input.get(CONF_BIND_ADDRESS, "")
             # Preserve skip_cert_verify setting from existing config (check options first, then data)
             data[CONF_SKIP_CERT_VERIFY] = (

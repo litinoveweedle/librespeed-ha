@@ -8,6 +8,7 @@
         "data": {
           "backend_type": "Backend-Typ",
           "server_selection": "Serverauswahl",
+          "name": "Instanzname",
           "custom_server": "Benutzerdefinierte Server-URL",
           "auto_update": "Automatische Geschwindigkeitstests aktivieren",
           "scan_interval": "Testintervall (Minuten)",
@@ -57,6 +58,7 @@
         "data": {
           "backend_type": "Backend-Typ",
           "server_selection": "Serverauswahl",
+          "name": "Instanzname",
           "custom_server": "Benutzerdefinierte Server-URL",
           "auto_update": "Automatische Geschwindigkeitstests aktivieren",
           "scan_interval": "Testintervall (Minuten)",

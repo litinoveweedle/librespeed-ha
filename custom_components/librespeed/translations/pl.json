@@ -8,6 +8,7 @@
         "data": {
           "backend_type": "Typ Backendu",
           "server_selection": "Wybór Serwera",
+          "name": "Nazwa instancji",
           "custom_server": "Niestandardowy URL Serwera",
           "auto_update": "Włącz Automatyczne Testy Prędkości",
           "scan_interval": "Interwał Testu (minuty)",
@@ -57,6 +58,7 @@
         "data": {
           "backend_type": "Typ Backendu",
           "server_selection": "Wybór Serwera",
+          "name": "Nazwa instancji",
           "custom_server": "Niestandardowy URL Serwera",
           "auto_update": "Włącz Automatyczne Testy Prędkości",
           "scan_interval": "Interwał Testu (minuty)",

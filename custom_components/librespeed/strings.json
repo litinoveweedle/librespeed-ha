@@ -8,6 +8,7 @@
         "data": {
           "backend_type": "Backend Type",
           "server_selection": "Server Selection",
+          "name": "Instance Name",
           "custom_server": "Custom Server URL",
           "auto_update": "Enable Automatic Speed Tests",
           "scan_interval": "Test Interval (minutes)",
@@ -58,6 +59,7 @@
         "data": {
           "backend_type": "Backend Type",
           "server_selection": "Server Selection",
+          "name": "Instance Name",
           "custom_server": "Custom Server URL",
           "auto_update": "Enable Automatic Speed Tests",
           "scan_interval": "Test Interval (minutes)",
